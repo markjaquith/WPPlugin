@@ -19,6 +19,8 @@ To install WPPlugin, use RubyGems:
 sudo gem install wpplugin
 ```
 
+**As of version 0.1, you must have the `wget` and `unzip` commands available on your system.**
+
 ## License & Copyright
 
 WPPlugin is Copyright Mark Jaquith 2012, and is offered under the terms of the GNU General Public License, version 2, or any later version.
