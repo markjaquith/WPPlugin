@@ -17,30 +17,64 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+require 'fileutils'
+require 'pathname'
+
 class WPPlugin
 
 	VERSION = '0.1'
 
 	def initialize
 		command = ARGV.shift
-		command = command.to_sm unless command.nil?
-		object = ARGV.shift
+		command = command.to_sym unless command.nil?
+		plugin = ARGV.shift
+		plugin = plugin.dup.to_str unless plugin.nil?
+		if !plugin.nil?
+			plugin.downcase
+			plugin.gsub! ".", ""
+			plugin.gsub! "/", ""
+			plugin.gsub! " ", ""
+		end
+		plugin = nil if !plugin.nil? and plugin.empty?
 		case command
 			when :"--v", :"--version"
 				info
-			when :"--help", :"-h"
-				exit_message "Usage: wpplugin\n       wpplugin [update|add|remove] {plugin-slug}\n       wpplugin update"
-			when nil
-				exit_message "IMPLEMENT nil"
+			when nil, :"--help", :"-h"
+				exit_message "Usage: wpplugin update\n       wpplugin [update|add|remove] {plugin-slug}"
+			when :add, :remove
+				exit_error_message "You must provide a plugin slug" if plugin.nil?
+				send command, plugin
 			when :update, :upgrade
-				if object.nil?
-					send command
+				if plugin.nil?
+					update_all
 				else
-					send command, object
+					update plugin
 				end
 			else
 				exit_error_message "Invalid command"
 		end
+	end
+
+	def update plugin
+		remove plugin
+		add plugin
+	end
+
+	def update_all
+		plugins = Pathname.glob("*/readme.txt").map { |i| i.dirname.to_s }.each do |plugin|
+			update plugin
+		end
+	end
+
+	def add plugin
+		uri = "http://downloads.wordpress.org/plugin/#{plugin}.latest-stable.zip"
+		`wget -O #{plugin}.zip #{uri} > /dev/null 2>&1`
+		`unzip #{plugin}.zip > /dev/null 2>&1`
+		`rm #{plugin}.zip > /dev/null 2>&1`
+	end
+
+	def remove plugin
+		FileUtils.rm_rf plugin if File.directory? plugin
 	end
 
 	def info

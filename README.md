@@ -2,22 +2,22 @@
 
 WPPlugin is a Ruby command line script to update and manage WordPress plugins. Useful for WordPress installs that are managed in a Git repository.
 
+**As of version 0.1, you must run it from your `plugins` or `mu-plugins` directory.**
+
 Available commands:
 
-* `wpplugin` — lists the plugins with available updates
 * `wpplugin add {plugin}` — installs the specified plugin
 * `wpplugin remove {plugin}` — removes the specified plugin
-* `wpplugin update|upgrade {plugin}` — updates a plugin to the latest stable version
-* `wpplugin update|upgrade` — updates all plugins to the latest stable version
+* `wpplugin update {plugin}` — updates a plugin to the latest stable version
+* `wpplugin update` — updates all plugins to the latest stable version
 
 ## Installation
 
-To install wpplugin, use RubyGems:
+To install WPPlugin, use RubyGems:
 
 ```bash
 sudo gem install wpplugin
 ```
-
 
 ## License & Copyright
 
