@@ -22,7 +22,7 @@ require 'pathname'
 
 class WPPlugin
 
-	VERSION = '0.1'
+	VERSION = '0.2-beta'
 
 	def initialize
 		command = ARGV.shift
@@ -56,6 +56,9 @@ class WPPlugin
 	end
 
 	def update plugin
+		# Gotta add some git and svn magic here for deleted files
+		# e.g. svn status . | grep '\!' | awk '{print $2;}' | xargs svn rm
+		# e.g. git add --all .
 		remove plugin
 		add plugin
 	end
