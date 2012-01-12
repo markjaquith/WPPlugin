@@ -22,7 +22,7 @@ require 'pathname'
 
 class WPPlugin
 
-	VERSION = '0.2-beta'
+	VERSION = '0.2beta1'
 
 	def initialize
 		command = ARGV.shift
@@ -56,11 +56,9 @@ class WPPlugin
 	end
 
 	def update plugin
-		# Gotta add some git and svn magic here for deleted files
-		# e.g. svn status . | grep '\!' | awk '{print $2;}' | xargs svn rm
-		# e.g. git add --all .
-		remove plugin
+		remove_files plugin
 		add plugin
+		`svn status #{plugin} | grep '\!' | awk '{print $2;}' | xargs svn rm`
 	end
 
 	def update_all
@@ -74,10 +72,18 @@ class WPPlugin
 		`wget -O #{plugin}.zip #{uri} > /dev/null 2>&1`
 		`unzip #{plugin}.zip > /dev/null 2>&1`
 		`rm #{plugin}.zip > /dev/null 2>&1`
+		`svn add --force #{plugin} > /dev/null 2>&1`
+		`git add --all #{plugin} > /dev/null 2>&1`
+	end
+
+	def remove_files plugin
+		FileUtils.rm_rf plugin if File.directory? plugin
 	end
 
 	def remove plugin
-		FileUtils.rm_rf plugin if File.directory? plugin
+		remove_files plugin
+		`svn rm #{plugin} > /dev/null 2>&1`
+		`git rm -r #{plugin} > /dev/null 2>&1`
 	end
 
 	def info
