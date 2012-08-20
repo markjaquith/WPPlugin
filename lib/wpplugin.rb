@@ -22,7 +22,7 @@ require 'pathname'
 
 class WPPlugin
 
-	VERSION = '0.2beta1'
+	VERSION = '0.2beta2'
 
 	def initialize
 		command = ARGV.shift
@@ -41,7 +41,7 @@ class WPPlugin
 				info
 			when nil, :"--help", :"-h"
 				exit_message "Usage: wpplugin update\n       wpplugin [update|add|remove] {plugin-slug}"
-			when :add, :remove
+			when :add, :remove, :install, :delete
 				exit_error_message "You must provide a plugin slug" if plugin.nil?
 				send command, plugin
 			when :update, :upgrade
@@ -76,6 +76,10 @@ class WPPlugin
 		`git add --all #{plugin} > /dev/null 2>&1`
 	end
 
+	def install plugin
+		add plugin
+	end
+
 	def remove_files plugin
 		FileUtils.rm_rf plugin if File.directory? plugin
 	end
@@ -84,6 +88,10 @@ class WPPlugin
 		remove_files plugin
 		`svn rm #{plugin} > /dev/null 2>&1`
 		`git rm -r #{plugin} > /dev/null 2>&1`
+	end
+
+	def delete plugin
+		remove plugin
 	end
 
 	def info
