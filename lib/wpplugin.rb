@@ -22,7 +22,7 @@ require 'pathname'
 
 class WPPlugin
 
-	VERSION = '0.2beta2'
+	VERSION = '0.2'
 
 	def initialize
 		command = ARGV.shift
