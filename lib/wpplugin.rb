@@ -58,7 +58,7 @@ class WPPlugin
 	def update plugin
 		remove_files plugin
 		add plugin
-		`svn status #{plugin} | grep '\!' | awk '{print $2;}' | xargs svn rm`
+		`svn status #{plugin} 2>/dev/null | grep '\!' | awk '{print $2;}' | xargs svn rm`
 	end
 
 	def update_all
