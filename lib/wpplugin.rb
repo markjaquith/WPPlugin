@@ -41,7 +41,7 @@ class WPPlugin
 				info
 			when nil, :"--help", :"-h"
 				exit_message "Usage: wpplugin update\n       wpplugin [update|add|remove] {plugin-slug}"
-			when :add, :remove, :install, :delete
+			when :add, :remove, :install, :delete, :uninstall
 				exit_error_message "You must provide a plugin slug" if plugin.nil?
 				send command, plugin
 			when :update, :upgrade
@@ -68,6 +68,11 @@ class WPPlugin
 	end
 
 	def add plugin
+		# If the directory exists, do an update instead
+		if File.directory? plugin
+			update plugin
+			return
+		end
 		uri = "http://downloads.wordpress.org/plugin/#{plugin}.latest-stable.zip"
 		`wget -O #{plugin}.zip #{uri} > /dev/null 2>&1`
 		`unzip #{plugin}.zip > /dev/null 2>&1`
@@ -76,9 +81,7 @@ class WPPlugin
 		`git add --all #{plugin} > /dev/null 2>&1`
 	end
 
-	def install plugin
-		add plugin
-	end
+	alias :install :add
 
 	def remove_files plugin
 		FileUtils.rm_rf plugin if File.directory? plugin
@@ -90,9 +93,8 @@ class WPPlugin
 		`git rm -r #{plugin} > /dev/null 2>&1`
 	end
 
-	def delete plugin
-		remove plugin
-	end
+	alias :delete    :remove
+	alias :uninstall :remove
 
 	def info
 		puts "WPPlugin #{self.class::VERSION}"
